@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,6 +31,11 @@ public class UserMealsUtil {
 
         List<UserMealWithExcess> mealsTo2 = filteredByStreams(meals, LocalTime.of(0, 0), LocalTime.of(21, 1), 2000);
         mealsTo2.forEach(System.out::println);
+
+        System.out.println("-------------------------");
+
+        List<UserMealWithExcess> mealsTo3 = filteredByCycle(meals, LocalTime.of(0, 0), LocalTime.of(21, 1), 2000);
+        mealsTo3.forEach(System.out::println);
 
         //System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
@@ -76,5 +82,43 @@ public class UserMealsUtil {
                         userMealserMeal.getCalories(),
                         dayCal.get(userMealserMeal.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
+    }
+
+    public static List<UserMealWithExcess> filteredByCycle(
+            List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        Map<LocalDate, Integer> dayCal = new HashMap<>();
+        List<UserMealWithExcess> mealsWithExcess = new ArrayList<>();
+
+        for (UserMeal meal : meals) {
+            dayCal.put(
+                    meal.getDateTime().toLocalDate(),
+                    dayCal.getOrDefault(meal.getDateTime().toLocalDate(),
+                            0) + meal.getCalories());
+        }
+
+        for (UserMeal meal : meals) {
+
+            if (isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime)) {
+                UserMealWithExcess mealWithExcess = new UserMealWithExcess(
+                        meal.getDateTime(),
+                        meal.getDescription(),
+                        meal.getCalories(),
+                        false);
+                mealsWithExcess.add(mealWithExcess);
+                reflectionExcessUpdate(mealWithExcess, dayCal, caloriesPerDay);
+            }
+        }
+        return mealsWithExcess;
+    }
+
+    private static void reflectionExcessUpdate(UserMealWithExcess meal, Map<LocalDate, Integer> dayCal, int caloriesPerDay) {
+        try {
+            Field excessField = UserMealWithExcess.class.getDeclaredField("excess");
+            excessField.setAccessible(true);
+            boolean excess = dayCal.get(meal.getDateTime().toLocalDate()) > caloriesPerDay;
+            excessField.set(meal, excess);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
