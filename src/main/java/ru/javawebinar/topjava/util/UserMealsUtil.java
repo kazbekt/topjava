@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static ru.javawebinar.topjava.util.TimeUtil.isBetweenHalfOpen;
 
 public class UserMealsUtil {
-    public static void main(String[] args) throws ReflectiveOperationException {
+    public static void main(String[] args) {
         List<UserMeal> meals = Arrays.asList(
                 new UserMeal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
                 new UserMeal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
@@ -90,8 +90,7 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycle(
-            List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay)
-            throws ReflectiveOperationException {
+            List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> dayCal = new HashMap<>();
         List<UserMealWithExcess> mealsWithExcess = new ArrayList<>();
 
@@ -120,44 +119,44 @@ public class UserMealsUtil {
     public static List<UserMealWithExcess> filteredByStream(
             List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
 
-        return meals.stream()
-                .collect(Collector.of(
+        class MealAccumulator {
+            List<UserMealWithExcess> mealsWithExcess = new ArrayList<>();
+            Map<LocalDate, Integer> dayCal = new HashMap<>();
+        }
+
+        MealAccumulator acc = meals.stream().collect(
+                Collector.of(
                         MealAccumulator::new,
-                        (accumulator, meal) -> {
-                            accumulator.utilMeals.add(meal);
-                            accumulator.dayCal.put(meal.getDateTime().toLocalDate(),
-                                    accumulator.dayCal.getOrDefault(meal.getDateTime().toLocalDate(), 0)
-                                            + meal.getCalories());
-                        },
-                        (combiner1, combiner2) -> {
-                            combiner1.utilMeals.addAll(combiner2.utilMeals);
-                            combiner2.dayCal.forEach((date, calories) ->
-                                    combiner1.dayCal.merge(date, calories, Integer::sum));
-                            return combiner1;
-                        }, finisher -> finisher.utilMeals.stream()
-                                .filter(meal -> isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                                .map(meal -> new UserMealWithExcess(
+                        (ma, meal) -> {
+                            LocalDate date = meal.getDateTime().toLocalDate();
+                            ma.dayCal.merge(date, meal.getCalories(), Integer::sum);
+
+                            if (isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime)) {
+                                ma.mealsWithExcess.add(new UserMealWithExcess(
                                         meal.getDateTime(),
                                         meal.getDescription(),
                                         meal.getCalories(),
-                                        finisher.dayCal.get(meal.getDateTime().toLocalDate()) > caloriesPerDay))
-                                .collect(Collectors.toList())));
+                                        false
+                                ));
+                            }
+                        },
+                        (ma1, ma2) -> {
+                            throw new UnsupportedOperationException();
+                        }
+                )
+        );
+        acc.mealsWithExcess.forEach(meal -> reflectionExcessUpdate(meal, acc.dayCal, caloriesPerDay));
+        return acc.mealsWithExcess;
     }
 
-    private static void reflectionExcessUpdate(UserMealWithExcess meal, Map<LocalDate, Integer> dayCal, int caloriesPerDay)
-            throws ReflectiveOperationException {
+    private static void reflectionExcessUpdate(UserMealWithExcess meal, Map<LocalDate, Integer> dayCal, int caloriesPerDay) {
         try {
             Field excessField = UserMealWithExcess.class.getDeclaredField("excess");
             excessField.setAccessible(true);
             boolean excess = dayCal.get(meal.getDateTime().toLocalDate()) > caloriesPerDay;
             excessField.set(meal, excess);
-        } catch (Exception e) {
-            throw new ReflectiveOperationException(e);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    private static class MealAccumulator {
-        List<UserMeal> utilMeals = new ArrayList<>();
-        Map<LocalDate, Integer> dayCal = new HashMap<>();
     }
 }
