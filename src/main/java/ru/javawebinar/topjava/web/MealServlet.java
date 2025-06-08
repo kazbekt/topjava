@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -22,9 +21,7 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("forward to meals.jsp with filtered meals");
         List<Meal> meals = MealsUtil.meals;
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(
-                meals, LocalTime.of(7, 0), LocalTime.of(16, 0), MealsUtil.CALORIES_PER_DAY);
-        log.debug("Filtered meals: {}", mealsTo);
+        List<MealTo> mealsTo = MealsUtil.createToByStreams(meals, MealsUtil.CALORIES_PER_DAY);
         request.setAttribute("mealsTo", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
