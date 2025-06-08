@@ -1,8 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="ru.javawebinar.topjava.util.TimeUtil" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-<c:set var="dtf" value="<%=DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm\")%>"/>
+<%@taglib uri="topjava/functions" prefix="f" %>
+
 <html lang="ru">
 
 <head>
@@ -42,7 +41,7 @@
     </tr>
     <c:forEach items="${mealsTo}" var="mealTo">
         <tr class="${mealTo.excess ? 'excess-row' : 'normal-row'}">
-            <td>${TimeUtil.formatLocalDateTime(mealTo.dateTime, 'yyyy-MM-dd HH:mm')}</td>
+            <td>${f:formatLocalDateTime(mealTo.dateTime)}</td>
             <td>${mealTo.description}</td>
             <td>${mealTo.calories}</td>
         </tr>
