@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib uri="topjava/functions" prefix="f" %>
+<%@ taglib  prefix="f" uri="topjava/functions" %>
 
 <html lang="ru">
 
