@@ -28,7 +28,6 @@ public class MealsUtil {
 
     public static void main(String[] args) {
 
-
         List<MealTo> mealsTo = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), CALORIES_PER_DAY);
         mealsTo.forEach(System.out::println);
     }
