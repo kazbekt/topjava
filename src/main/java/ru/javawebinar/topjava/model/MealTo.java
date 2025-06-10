@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class MealTo {
 
-    private Integer uuid;
+    private final Integer uuid;
 
     private final LocalDateTime dateTime;
 
@@ -14,11 +14,16 @@ public class MealTo {
 
     private final boolean excess;
 
-    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(Integer uuid, LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this.uuid = uuid;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
         this.excess = excess;
+    }
+
+    public Integer getUuid() {
+        return uuid;
     }
 
     @Override

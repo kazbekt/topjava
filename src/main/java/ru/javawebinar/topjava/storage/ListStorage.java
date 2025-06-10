@@ -17,39 +17,44 @@ public class ListStorage implements Storage {
 
 
     @Override
-    public void save(Meal meal) {
+    public synchronized void save(Meal meal) {
         log.debug("meal saved");
         meal.setUuid(nextUuid.getAndIncrement());
         storage.add(meal);
     }
 
     @Override
-    public Meal get(Integer uuid) {
+    public synchronized Meal get(String searchID) {
         log.debug("meal retrieved");
-        return storage.get(findIndexByUuid(uuid));
+        return storage.get(findIndexByUuid(searchID));
     }
 
     @Override
-    public void update(Meal meal, Integer uuid) {
+    public synchronized void update(Meal meal) {
         log.debug("meal updated");
-        int index = findIndexByUuid(uuid);
-        meal.setUuid(uuid);
-        storage.set(index, meal);
+        if (meal.getUuid() == null) {
+            throw new IllegalArgumentException("Meal uuid must not be null");
+        }
+        doUpdate(meal, meal.getUuid().toString());
     }
 
     @Override
-    public void delete(Integer uuid) {
+    public synchronized void delete(String searchID) {
         log.debug("meal deleted");
-        storage.remove(findIndexByUuid(uuid));
+        storage.remove(findIndexByUuid(searchID));
     }
 
     @Override
-    public List<Meal> getAllMeal() {
+    public synchronized List<Meal> getAllMeal() {
         log.debug("meal list retrieved");
         return new ArrayList<>(storage);
     }
 
-    private int findIndexByUuid(Integer uuid) {
+    private int findIndexByUuid(String searchID) {
+        if (searchID == null) {
+            throw new IllegalArgumentException("Uuid must not be null");
+        }
+        Integer uuid = Integer.parseInt(searchID);
         for (int i = 0; i < storage.size(); i++) {
             if (storage.get(i).getUuid().equals(uuid)) {
                 return i;
@@ -57,4 +62,13 @@ public class ListStorage implements Storage {
         }
         throw new NoSuchElementException("Meal with uuid=" + uuid + " not found");
     }
+
+    private void doUpdate(Meal meal, String uuidString) {
+        if (meal == null) {
+            throw new IllegalArgumentException("Meal must not be null");
+        }
+        int index = findIndexByUuid(uuidString);
+        storage.set(index, meal);
+    }
+
 }

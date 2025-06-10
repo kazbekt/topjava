@@ -8,11 +8,11 @@ public interface Storage {
 
     void save(Meal r); //
 
-    Meal get(Integer uuid);
+    Meal get(String searchID);
 
-    void delete(Integer uuid);
+    void delete(String searchID);
 
-    void update(Meal r, Integer uuid);
+    void update(Meal r);
 
     List<Meal> getAllMeal();
 
