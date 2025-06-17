@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -58,9 +59,10 @@ public class MealsUtil {
 
     public static void main(String[] args) {
         InMemoryMealRepository repository = new InMemoryMealRepository();
-        meals.forEach(m -> repository.save(m, user.getId()));
-        repository.getAll().forEach(System.out::println);
-        System.out.println(repository.delete(4, 1));
+        MealService service = new MealService(repository);
+
+        service.getAll().forEach(System.out::println);
+        service.delete(4, user.getId());
         System.out.println("After delete:");
         repository.getAll().forEach(System.out::println);
 
