@@ -58,9 +58,10 @@ public class MealsUtil {
 
     public static void main(String[] args) {
         InMemoryMealRepository repository = new InMemoryMealRepository();
-        meals.forEach(repository::save);
+        meals.forEach(m -> repository.save(m, user.getId()));
         repository.getAll().forEach(System.out::println);
-        repository.delete(4);
+        System.out.println(repository.delete(4, 1));
+        System.out.println("After delete:");
         repository.getAll().forEach(System.out::println);
 
     }
