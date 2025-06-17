@@ -26,13 +26,13 @@ public class InMemoryUserRepository implements UserRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-       UsersUtil.users.forEach(this::save);
+        UsersUtil.users.forEach(this::save);
     }
 
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        if(user.isNew()){
+        if (user.isNew()) {
             user.setId(counter.incrementAndGet());
             usersMap.put(user.getId(), user);
             return user;

@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
@@ -7,6 +8,7 @@ import java.util.Collection;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
+@Service
 public class MealService {
 
     private final MealRepository repository;
@@ -21,7 +23,7 @@ public class MealService {
     }
 
     public void delete(int id, int authUserId) {
-    checkNotFound(repository.delete(id, authUserId), id);
+        checkNotFound(repository.delete(id, authUserId), id);
     }
 
     public Meal get(int id, int authUserId) {
