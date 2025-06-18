@@ -3,10 +3,9 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
-import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,11 +19,11 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    private MealService service;
+    private MealRepository repository;
 
     @Override
     public void init() {
-        service = new MealService(new InMemoryMealRepository());
+        repository = new InMemoryMealRepository();
     }
 
     @Override
@@ -36,14 +35,14 @@ public class MealServlet extends HttpServlet {
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")),
-                getAuthUserId());
+                SecurityUtil.authUserId());
 
         if (meal.isNew()) {
             log.info("Create {}", meal);
-            service.create(meal, getAuthUserId());
+            repository.save(meal, SecurityUtil.authUserId());
         } else {
             log.info("Update {}", meal);
-            service.update(meal, meal.getId(), getAuthUserId());
+            repository.save(meal,  SecurityUtil.authUserId());
         }
         response.sendRedirect("meals");
 
@@ -57,17 +56,17 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 int id = getId(request);
                 log.info("Delete id={}", id);
-                service.delete(id, getAuthUserId());
+                repository.delete(id, SecurityUtil.authUserId());
                 response.sendRedirect("meals");
                 break;
             case "create":
-                final Meal newMeal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, getAuthUserId());
+                final Meal newMeal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, null);
                 request.setAttribute("meal", newMeal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "update":
                 int updateId = getId(request);
-                Meal mealToUpdate = service.get(updateId, getAuthUserId());
+                Meal mealToUpdate = repository.get(updateId, SecurityUtil.authUserId());
                 request.setAttribute("meal", mealToUpdate);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
@@ -75,14 +74,10 @@ public class MealServlet extends HttpServlet {
             default:
                 log.info("getAll");
                 request.setAttribute("meals",
-                        MealRestController.getTos(service.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                        MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY, SecurityUtil.authUserId()));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
-    }
-
-    private static int getAuthUserId() {
-        return SecurityUtil.authUserId();
     }
 
     private int getId(HttpServletRequest request) {

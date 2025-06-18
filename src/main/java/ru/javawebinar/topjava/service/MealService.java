@@ -31,7 +31,6 @@ public class MealService {
     }
 
     public void update(Meal meal, int id, int userId) {
-        assureIdConsistent(meal, id);
         checkNotFound(repository.save(meal, userId), id);
     }
 
