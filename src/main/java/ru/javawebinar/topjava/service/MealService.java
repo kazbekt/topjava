@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
-import java.util.Collection;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
@@ -17,25 +17,25 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal, int authUserId) {
+    public Meal create(Meal meal, int userId) {
         checkIsNew(meal);
-        return repository.save(meal, authUserId);
+        return repository.save(meal, userId);
     }
 
-    public void delete(int id, int authUserId) {
-        checkNotFound(repository.delete(id, authUserId), id);
+    public void delete(int id, int userId) {
+        checkNotFound(repository.delete(id, userId), id);
     }
 
-    public Meal get(int id, int authUserId) {
-        return checkNotFound(repository.get(id, authUserId), id);
+    public Meal get(int id, int userId) {
+        return checkNotFound(repository.get(id, userId), id);
     }
 
-    public void update(Meal meal, int id, int authUserId) {
+    public void update(Meal meal, int id, int userId) {
         assureIdConsistent(meal, id);
-        checkNotFound(repository.save(meal, authUserId), id);
+        checkNotFound(repository.save(meal, userId), id);
     }
 
-    public Collection<Meal> getAll() {
+    public List<Meal> getAll() {
         return repository.getAll();
     }
 

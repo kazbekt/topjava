@@ -2,12 +2,13 @@ package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class UsersUtil {
+public class TestUserRepository {
 
     public static final User testUser = new User(
             null, "Test Test", "test", "pass",
@@ -23,7 +24,7 @@ public class UsersUtil {
     );
 
     public static void main(String[]args) {
-        InMemoryUserRepository repository = new InMemoryUserRepository();
+        UserRepository repository = new InMemoryUserRepository();
         repository.getAll().forEach(System.out::println);
         repository.delete(4);
         repository.getAll().forEach(System.out::println);
