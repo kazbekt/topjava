@@ -18,7 +18,6 @@ public class MealService {
     }
 
     public Meal create(Meal meal, int userId) {
-        checkIsNew(meal);
         return repository.save(meal, userId);
     }
 
@@ -34,8 +33,8 @@ public class MealService {
         checkNotFound(repository.save(meal, userId), id);
     }
 
-    public List<Meal> getAll() {
-        return repository.getAll();
+    public List<Meal> getAll(int userId) {
+        return repository.getAll(userId);
     }
 
 }

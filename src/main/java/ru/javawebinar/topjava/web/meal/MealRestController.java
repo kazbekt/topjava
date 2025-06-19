@@ -12,6 +12,8 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.checkIsNew;
+
 @Controller
 public class MealRestController {
 
@@ -20,27 +22,28 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public List<MealTo> getAll() {
+    public List<MealTo> getAll(int userId) {
         log.info("getAll mealsTo");
-        return MealsUtil.getTos(service.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY, SecurityUtil.authUserCaloriesPerDay());
+        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
-    public Meal get(int id, int authUserId) {
+    public Meal get(int id) {
         log.info("get meal with id={}", id);
         return service.get(id, SecurityUtil.authUserId());
     }
 
-    public Meal create(Meal meal, int authUserId) {
+    public Meal create(Meal meal) {
         log.info("create meal {}", meal);
+        checkIsNew(meal);
         return service.create(meal, SecurityUtil.authUserId());
     }
 
-    public void delete(int id, int authUserId) {
+    public void delete(int id) {
         log.info("delete meal with id={}", id);
         service.delete(id, SecurityUtil.authUserId());
     }
 
-    public void update(Meal meal, int id, int authUserId) {
+    public void update(Meal meal, int id) {
         log.info("update meal {} with id={}", meal, id);
         service.update(meal, id, SecurityUtil.authUserId());
     }
