@@ -25,6 +25,7 @@ public class SpringMain {
             mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Новая еда", 1000, null));
             mealRestController.getAll();
             System.out.println(mealRestController.getAll().size());
+            System.out.println(mealRestController.getAll());
 
         }
     }

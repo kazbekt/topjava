@@ -23,9 +23,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if (meal.getUserId() == null) {
-            throw new IllegalArgumentException("Meal userId must not be null");
-        }
+        meal.setUserId(userId);
 
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
@@ -39,7 +37,6 @@ public class InMemoryMealRepository implements MealRepository {
         } else {
             return mealsMap.computeIfPresent(meal.getId(), (id, oMeal) -> meal);
         }
-
     }
 
     @Override
@@ -61,8 +58,9 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAll() {
+    public List<Meal> getAll(int userId) {
         return mealsMap.values().stream()
+                .filter(meal -> meal.getUserId() == userId)
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
