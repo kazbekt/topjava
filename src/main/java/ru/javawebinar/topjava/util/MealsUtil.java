@@ -39,12 +39,14 @@ public class MealsUtil {
         MealRepository repository = new InMemoryMealRepository();
         MealService service = new MealService(repository);
 
-        service.getAll(USER_ID).forEach(System.out::println);
+        getTos(service.getAll(), DEFAULT_CALORIES_PER_DAY).forEach(System.out::println);
         service.delete(4, USER_ID);
 
         System.out.println("After delete:");
-        repository.getAll(USER_ID).forEach(System.out::println);
-        service.delete(3, WRONG_USER_ID);
+        getTos(service.getAll(), DEFAULT_CALORIES_PER_DAY).forEach(System.out::println);
+        System.out.println("After save meal with userId == null:");
+        service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Новая еда", 1000, null), 1);
+        getTos(service.getAll(), DEFAULT_CALORIES_PER_DAY).forEach(System.out::println);
 
     }
 
@@ -64,6 +66,7 @@ public class MealsUtil {
                 );
 
         return meals.stream()
+                .filter(meal -> meal.getUserId() == USER_ID)
                 .filter(filter)
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());

@@ -5,7 +5,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -21,11 +20,11 @@ public class SpringMain {
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ADMIN));
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            mealRestController.getAll(SecurityUtil.authUserId());
-            System.out.println(mealRestController.getAll(SecurityUtil.authUserId()).size());
-            mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Новая еда", 1000, 1));
-            mealRestController.getAll(SecurityUtil.authUserId());
-            System.out.println(mealRestController.getAll(SecurityUtil.authUserId()).size());
+            mealRestController.getAll();
+            System.out.println(mealRestController.getAll().size());
+            mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Новая еда", 1000, null));
+            mealRestController.getAll();
+            System.out.println(mealRestController.getAll().size());
 
         }
     }

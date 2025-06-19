@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkIsNew;
 
 @Controller
@@ -22,9 +23,9 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public List<MealTo> getAll(int userId) {
+    public List<MealTo> getAll() {
         log.info("getAll mealsTo");
-        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return MealsUtil.getTos(service.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
     public Meal get(int id) {
@@ -45,6 +46,7 @@ public class MealRestController {
 
     public void update(Meal meal, int id) {
         log.info("update meal {} with id={}", meal, id);
+        assureIdConsistent(meal, id);
         service.update(meal, id, SecurityUtil.authUserId());
     }
 }

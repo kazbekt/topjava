@@ -33,8 +33,8 @@ public class MealService {
         checkNotFound(repository.save(meal, userId), id);
     }
 
-    public List<Meal> getAll(int userId) {
-        return repository.getAll(userId);
+    public List<Meal> getAll() {
+        return repository.getAll();
     }
 
 }
