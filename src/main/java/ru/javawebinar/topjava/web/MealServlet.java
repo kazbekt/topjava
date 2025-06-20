@@ -89,7 +89,7 @@ public class MealServlet extends HttpServlet {
                 LocalTime startTime = (startTimeParam == null || startTimeParam.isEmpty()) ? null : LocalTime.parse(startTimeParam);
                 LocalTime endTime = (endTimeParam == null || endTimeParam.isEmpty()) ? null : LocalTime.parse(endTimeParam);
 
-                List<MealTo> filteredMeals = mealRestController.getFiltered(
+                List<MealTo> filteredMeals = mealRestController.getBetween(
                         startDate,
                         endDate,
                         startTime,
@@ -116,7 +116,6 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
         if (appCtx != null) {
             appCtx.close();
         }
