@@ -41,14 +41,14 @@ public class MealServlet extends HttpServlet {
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")),
-                SecurityUtil.authUserId());
+                null);
 
         if (meal.isNew()) {
             log.info("Create {}", meal);
             mealRestController.create(meal);
         } else {
             log.info("Update {}", meal);
-            mealRestController.update(meal, SecurityUtil.authUserId());
+            mealRestController.update(meal, meal.getId());
         }
         response.sendRedirect("meals");
 
@@ -82,10 +82,10 @@ public class MealServlet extends HttpServlet {
                 String startTimeParam = request.getParameter("startTime");
                 String endTimeParam = request.getParameter("endTime");
 
-                LocalDate startDate = (startDateParam == null || startDateParam.isEmpty()) ? null : LocalDate.parse(startDateParam);
-                LocalDate endDate = (endDateParam == null || endDateParam.isEmpty()) ? null : LocalDate.parse(endDateParam);
-                LocalTime startTime = (startTimeParam == null || startTimeParam.isEmpty()) ? null : LocalTime.parse(startTimeParam);
-                LocalTime endTime = (endTimeParam == null || endTimeParam.isEmpty()) ? null : LocalTime.parse(endTimeParam);
+                LocalDate startDate = (startDateParam == null || startDateParam.isEmpty()) ? LocalDate.MIN : LocalDate.parse(startDateParam);
+                LocalDate endDate = (endDateParam == null || endDateParam.isEmpty()) ? LocalDate.MAX : LocalDate.parse(endDateParam);
+                LocalTime startTime = (startTimeParam == null || startTimeParam.isEmpty()) ? LocalTime.MIN : LocalTime.parse(startTimeParam);
+                LocalTime endTime = (endTimeParam == null || endTimeParam.isEmpty()) ? LocalTime.MAX : LocalTime.parse(endTimeParam);
 
                 List<MealTo> filteredMeals = mealRestController.getBetween(
                         startDate,

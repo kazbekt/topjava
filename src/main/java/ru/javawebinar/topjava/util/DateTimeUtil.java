@@ -12,17 +12,12 @@ public class DateTimeUtil {
         return !lt.isBefore(startTime) && lt.isBefore(endTime);
     }
 
-
     public static boolean isBetweenHalfOpen(
             LocalDateTime ldt,
             LocalDate startDate,
-            LocalDate endDate,
-            LocalTime startTime,
-            LocalTime endTime) {
+            LocalDate endDate) {
         return !ldt.toLocalDate().isBefore(startDate)
-                && !ldt.toLocalDate().isAfter(endDate)
-                && !ldt.toLocalTime().isBefore(startTime)
-                && ldt.toLocalTime().isBefore(endTime);
+                && !ldt.toLocalDate().isAfter(endDate);
     }
 
     public static String toString(LocalDateTime ldt) {
