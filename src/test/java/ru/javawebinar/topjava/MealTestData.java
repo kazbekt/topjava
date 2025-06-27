@@ -26,9 +26,13 @@ public class MealTestData {
     public static final Meal um10 = new Meal(UM_10_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0, 0), "Обед", 500);
     public static final Meal um11 = new Meal(UM_11_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0, 0), "Ужин", 410);
 
-    public static final Meal newMeal = new Meal(null, LocalDateTime.of(2021, Month.JANUARY, 1, 10, 0), "newMeal", 555);
-    public static final Meal updated =new Meal(UM_6_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обновленный обед", 1000);
+    public static Meal getNew() {
+        return new Meal(null, LocalDateTime.of(2021, Month.JANUARY, 1, 10, 0), "newMeal", 555);
+    }
 
+    public static Meal getUpdated() {
+        return new Meal(UM_6_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обновленный обед", 1000);
+    }
 
     public static Meal getSameDateNewMeal() {
         return new Meal(null, um5.getDateTime(), "Новый завтрак", 1000);
@@ -43,6 +47,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 }
