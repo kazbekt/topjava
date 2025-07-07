@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.jpa;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
@@ -23,21 +24,15 @@ public class JpaMealRepository implements MealRepository {
     @Transactional
     public Meal save(Meal meal, int userId) {
         User user = em.getReference(User.class, userId);
-
+        meal.setUser(user);
         if (meal.isNew()) {
-            meal.setUser(user);
             em.persist(meal);
             return meal;
         } else {
-            Meal existing = em.find(Meal.class, meal.getId());
-            if (existing == null || !existing.getUser().getId().equals(userId)) {
+            if (get(meal.id(), userId) == null) {
                 return null;
             }
-
-            existing.setDateTime(meal.getDateTime());
-            existing.setDescription(meal.getDescription());
-            existing.setCalories(meal.getCalories());
-            return em.merge(existing);
+            return em.merge(meal);
         }
     }
 
@@ -56,7 +51,7 @@ public class JpaMealRepository implements MealRepository {
                 .setParameter("id", id)
                 .setParameter("userId", userId)
                 .getResultList();
-        return meals.isEmpty() ? null : meals.get(0);
+        return DataAccessUtils.singleResult(meals);
     }
 
     @Override
