@@ -3,10 +3,9 @@ package ru.javawebinar.topjava.service;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +37,30 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 public class MealServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger("TEST_TIMING");
-
+    private static final Logger log = LoggerFactory.getLogger("SUMMURY_LOG");
     private static final Logger testLog = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final Map<String, Long> testDurations = new ConcurrentHashMap<>();
 
     @Rule
-    public TestRule testTimingRule = new TestTimingRule();
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            testDurations.put(description.getMethodName(), nanos);
+            testLog.info("{} - {} ms",
+                    description.getMethodName(),
+                    nanos / 1_000_000);
+        }
+    };
 
-    private static final Map<String, Long> testDurations = new ConcurrentHashMap<>();
+    @AfterClass
+    public static void printTestTimingSummary() {
+        StringBuilder summary = new StringBuilder("\n=== SUMMARY ===");
+        testDurations.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEach(entry -> summary.append(String.format("\n%-25s - %4d ms",
+                        entry.getKey(), entry.getValue())));
+        log.info(summary.toString());
+    }
 
     @Autowired
     private MealService service;
@@ -127,37 +142,5 @@ public class MealServiceTest {
     @Test
     public void getBetweenWithNullDates() {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
-    }
-
-    @AfterClass
-    public static void printTestTimingSummary() {
-        StringBuilder summary = new StringBuilder("\n=== SUMMARY ===");
-        testDurations.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEach(entry -> summary.append(String.format("\n%-25s - %4d ms",
-                        entry.getKey(), entry.getValue())));
-
-        log.info(summary.toString());
-    }
-
-    private static class TestTimingRule implements TestRule {
-        @Override
-        public Statement apply(Statement base, Description description) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    long startTime = System.currentTimeMillis();
-                    try {
-                        base.evaluate();
-                    } finally {
-                        long duration = System.currentTimeMillis() - startTime;
-                        String testName = description.getMethodName();
-                        testDurations.put(testName, duration);
-
-                        testLog.info("{} - {} ms", testName, duration);
-                    }
-                }
-            };
-        }
     }
 }
