@@ -15,5 +15,5 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class AbstractServiceTest {
+public abstract class AbstractServiceTest {
 }
