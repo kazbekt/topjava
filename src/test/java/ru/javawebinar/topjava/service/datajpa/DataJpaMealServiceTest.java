@@ -1,9 +1,15 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.datajpa;
 
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.service.AbstractMealServiceTest;
+import static ru.javawebinar.topjava.Profiles.DATAJPA;
 
-@ActiveProfiles({"datajpa", "hsqldb"})
-public class DataJpaMealServiceTest extends AbstractMealServiceTest{
+@ActiveProfiles(
+        resolver = ActiveDbProfileResolver.class,
+        profiles = DATAJPA
+)
+public class DataJpaMealServiceTest extends AbstractMealServiceTest {
     @Override
     public void delete() {
         super.delete();

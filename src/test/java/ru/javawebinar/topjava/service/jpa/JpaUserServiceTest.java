@@ -1,9 +1,15 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.jpa;
 
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.service.AbstractUserServiceTest;
+import static ru.javawebinar.topjava.Profiles.JPA;
 
-@ActiveProfiles({"datajpa", "hsqldb"})
-public class DataJpaUserServiceTest extends AbstractUserServiceTest{
+@ActiveProfiles(
+        resolver = ActiveDbProfileResolver.class,
+        profiles = JPA
+)
+public class JpaUserServiceTest extends AbstractUserServiceTest {
     @Override
     public void setup() {
         super.setup();

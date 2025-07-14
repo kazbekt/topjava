@@ -13,8 +13,8 @@
 
     <!-- Change DB by comment/uncomment property-placeholder -->
 
-<!--        <context:property-placeholder location="classpath:db/postgres.properties" system-properties-mode="OVERRIDE"/>-->
-    <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
+        <context:property-placeholder location="classpath:db/postgres.properties" system-properties-mode="OVERRIDE"/>
+<!--    <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>-->
 
     <!--
         For postgres driver logging
@@ -76,8 +76,6 @@
     </beans>
 
     <beans profile="jpa, datajpa">
-        <context:component-scan base-package="ru.javawebinar.**.model"/>
-        <context:component-scan base-package="ru.javawebinar.**.service"/>
         <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
               p:dataSource-ref="dataSource"
               p:packagesToScan="ru.javawebinar.**.model">

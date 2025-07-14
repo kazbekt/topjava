@@ -1,9 +1,15 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.jdbc;
 
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.service.AbstractMealServiceTest;
+import static ru.javawebinar.topjava.Profiles.JDBC;
 
-@ActiveProfiles({"jdbc", "hsqldb"})
-public class JdbcUserServiceTest extends AbstractMealServiceTest{
+@ActiveProfiles(
+        resolver = ActiveDbProfileResolver.class,
+        profiles = JDBC
+)
+public class JdbcMealServiceTest extends AbstractMealServiceTest {
     @Override
     public void delete() {
         super.delete();
