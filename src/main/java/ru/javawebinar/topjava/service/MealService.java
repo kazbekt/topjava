@@ -40,7 +40,7 @@ public class MealService {
 
     public void update(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
-        checkNotFound(repository.save(meal, userId), meal.id());
+        checkNotFound(repository.save(meal, userId), meal.getId());
     }
 
     public Meal create(Meal meal, int userId) {
