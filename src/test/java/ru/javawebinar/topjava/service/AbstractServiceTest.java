@@ -51,7 +51,7 @@ public abstract class AbstractServiceTest {
         });
     }
 
-    protected void assumeJdbc(){
+    protected void assumeNotJdbc(){
         Assume.assumeFalse("Ignored for JDBC",
                 Arrays.asList(environment.getActiveProfiles()).contains(Profiles.JDBC));
     }
