@@ -14,23 +14,19 @@
         <input type="hidden" name="action" value="filter">
         <dl>
             <dt><spring:message code="meal.dateInclusive"/></dt>
-            <dd><input type="date" name=
-            <spring:message code="meal.startDate"/> value="${param.startDate}"></dd>
+            <dd><input type="date" name="meal.startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.dateExclusive"/></dt>
-            <dd><input type="date" name=
-            <spring:message code="meal.endDate"/> value="${param.endDate}"></dd>
+            <dd><input type="date" name="meal.endDate" value="${param.endDate}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.timeInclusive"/></dt>
-            <dd><input type="time" name=
-            <spring:message code="meal.startTime"/> value="${param.startTime}"></dd>
+            <dd><input type="time" name="meal.startTime" value="${param.startTime}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.timeExclusive"/></dt>
-            <dd><input type="time" name=
-            <spring:message code="meal.endTime"/> value="${param.endTime}"></dd>
+            <dd><input type="time" name="meal.endTime" value="${param.endTime}"></dd>
         </dl>
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
