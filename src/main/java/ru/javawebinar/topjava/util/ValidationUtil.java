@@ -10,6 +10,9 @@ import javax.validation.*;
 import java.util.Set;
 
 public class ValidationUtil {
+
+    public static final Validator JDBC_VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+
     private ValidationUtil() {
     }
 
@@ -55,15 +58,8 @@ public class ValidationUtil {
         return rootCause != null ? rootCause : t;
     }
 
-    private static final ValidatorFactory validatorFactory =
-            Validation.buildDefaultValidatorFactory();
-
-    public static Validator getValidator() {
-        return validatorFactory.getValidator();
-    }
-
     public static void validate(Object bean) {
-        Set<ConstraintViolation<Object>> violations = getValidator().validate(bean);
+        Set<ConstraintViolation<Object>> violations = JDBC_VALIDATOR.validate(bean);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }

@@ -81,7 +81,7 @@ public class JdbcUserRepository implements UserRepository {
             int userId = rs.getInt("id");
             User user = userMap.computeIfAbsent(userId, id -> {
                 try {
-                    User u = ROW_MAPPER.mapRow(rs, 0);
+                    User u = ROW_MAPPER.mapRow(rs, rs.getRow());
                     u.setRoles(new HashSet<>());
                     return u;
                 } catch (SQLException e) {
@@ -97,13 +97,6 @@ public class JdbcUserRepository implements UserRepository {
         });
 
         return new ArrayList<>(userMap.values());
-    }
-
-    private void saveRoles(User user) {
-        Set<Role> roles = user.getRoles();
-        List<Object[]> batchArgs = roles.stream().map(role -> new Object[]{user.getId(), role.name()}).collect(Collectors.toList());
-
-        jdbcTemplate.batchUpdate("INSERT INTO user_role (user_id, role) VALUES (?, ?)", batchArgs);
     }
 
     private User queryForUserWithRoles(String sql, Object... args) {
@@ -128,6 +121,13 @@ public class JdbcUserRepository implements UserRepository {
             }
             return user;
         });
+    }
+
+    private void saveRoles(User user) {
+        Set<Role> roles = user.getRoles();
+        List<Object[]> batchArgs = roles.stream().map(role -> new Object[]{user.getId(), role.name()}).collect(Collectors.toList());
+
+        jdbcTemplate.batchUpdate("INSERT INTO user_role (user_id, role) VALUES (?, ?)", batchArgs);
     }
 }
 
