@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.util;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -38,5 +39,41 @@ public class DateTimeUtil {
     public static @Nullable
     LocalTime parseLocalTime(@Nullable String str) {
         return StringUtils.hasLength(str) ? LocalTime.parse(str) : null;
+    }
+
+    public static class StringToLocalDateConverter implements Converter<String, LocalDate> {
+
+        private String datePattern = "yyyy-MM-dd";
+
+        public String getDatePattern() {
+            return datePattern;
+        }
+
+        public void setDatePattern(String datePattern) {
+            this.datePattern = datePattern;
+        }
+
+        @Override
+        public LocalDate convert(String dateString) {
+            return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(datePattern));
+        }
+    }
+
+    public static class StringToLocalTimeConverter implements Converter<String, LocalTime> {
+
+        private String timePattern = "HH:mm:ss";
+
+        public String getTimePattern() {
+            return timePattern;
+        }
+
+        public void setTimePattern(String timePattern) {
+            this.timePattern = timePattern;
+        }
+
+        @Override
+        public LocalTime convert(String timeString) {
+            return LocalTime.parse(timeString, DateTimeFormatter.ofPattern(timePattern));
+        }
     }
 }

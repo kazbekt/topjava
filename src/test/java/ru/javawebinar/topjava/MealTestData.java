@@ -34,6 +34,7 @@ public class MealTestData {
             createTo(meal5, true), createTo(meal4, true), createTo(meal3, false),
             createTo(meal2, false), createTo(meal1, false));
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
+    public static final List<MealTo> mealTo = List.of(createTo(meal3, false));
 
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);

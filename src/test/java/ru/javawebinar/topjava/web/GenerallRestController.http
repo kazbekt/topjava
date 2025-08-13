@@ -1,0 +1,38 @@
+
+
+###  Get all meals (GET)
+GET http://localhost:8080/topjava/rest/profile/meals
+Accept: application/json
+
+###
+
+###  Date filter (GET)
+GET http://localhost:8080/topjava/rest/profile/meals/filter?startDate=2020-01-30&startTime=10:00:00&endDate=2020-01-31&
+    endTime=13:00:00
+Accept: application/json
+
+###
+
+### New meal (POST)
+POST http://localhost:8080/topjava/rest/profile/meals
+Content-Type: application/json
+
+{
+  "dateTime": "2023-01-30T12:00:00",
+  "description": "Новый обед",
+  "calories": 500
+}
+
+### Delete meal (DELETE)
+DELETE http://localhost:8080/topjava/meals/delete/100006
+
+###
+
+### GetWithMeals profile (GET)
+ GET http://localhost:8080/topjava/rest/profile/with-meals
+
+###
+
+### Get admin meal by ID (GET)
+ GET http://localhost:8080/topjava/rest/admin/users/with-meals/100000
+###
