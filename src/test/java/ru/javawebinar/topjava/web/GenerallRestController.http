@@ -24,7 +24,8 @@ Content-Type: application/json
 }
 
 ### Delete meal (DELETE)
-DELETE http://localhost:8080/topjava/meals/delete/100006
+DELETE http://localhost:8080/topjava/rest/profile/meals/100006
+Accept: application/json
 
 ###
 
