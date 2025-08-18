@@ -88,7 +88,9 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+//    @EnabledIf(value = "assumeNotJdbc", disabledReason = "Only for DATAJPA profile")
     void getWithMeals() throws Exception {
+        assumeDatajpa();
         ResultActions action = perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_ID + "/with-meals"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
