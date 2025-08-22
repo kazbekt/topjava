@@ -32,9 +32,25 @@ function deleteRow(id) {
     });
 }
 
+function updateDataTable(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
+}
+
 function updateTable() {
+    const filterForm = $("#filterForm");
+
+    if (filterForm.length > 0) {
+        const formData = filterForm.serialize();
+        if (formData) {
+            $.get(ctx.ajaxUrl + "filter?" + formData, function (data) {
+                updateDataTable(data)
+            });
+            return;
+        }
+    }
+
     $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
+        updateDataTable(data)
     });
 }
 

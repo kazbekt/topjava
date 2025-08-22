@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -84,5 +85,19 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Set.of())));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Set.of())));
+    }
+
+    @Test
+    void enable() {
+        User user = service.get(USER_ID);
+        Assertions.assertTrue(user.isEnabled());
+
+        service.enable(USER_ID, false);
+        User disabledUser = service.get(USER_ID);
+        Assertions.assertFalse(disabledUser.isEnabled());
+
+        service.enable(USER_ID, true);
+        User enabledUser = service.get(USER_ID);
+        Assertions.assertTrue(enabledUser.isEnabled());
     }
 }

@@ -45,3 +45,30 @@ $(function () {
         })
     );
 });
+
+function enableUser(userId, enabled) {
+    const userRow = $('tr[id="' + userId + '"]');
+
+    $.ajax({
+        url: ctx.ajaxUrl + userId + '/enable',
+        type: 'POST',
+        data: { enabled: enabled },
+        success: function () {
+            if (enabled) {
+                userRow.removeClass('text-muted');
+            } else {
+                userRow.addClass('text-muted');
+            }
+            successNoty(enabled ? 'User enabled' : 'User disabled');
+        }
+    });
+}
+
+$(function () {
+    $(document).on('change', '.user-enabled-checkbox', function () {
+        const userId = $(this).data('user-id');
+        const enabled = $(this).is(':checked');
+        enableUser(userId, enabled);
+    });
+});
+
