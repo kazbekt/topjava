@@ -2,12 +2,8 @@ const mealAjaxUrl = "profile/meals/";
 
 const ctx = {
     ajaxUrl: mealAjaxUrl,
-    updateTable: function() {
-        const formData = $("#filterForm").serialize();
-        const url = formData ? this.ajaxUrl + "filter?" + formData : this.ajaxUrl;
-        $.get(url, function(data) {
-            updateDataTable(data);
-        });
+    updateTable: function () {
+        filter();
     }
 };
 

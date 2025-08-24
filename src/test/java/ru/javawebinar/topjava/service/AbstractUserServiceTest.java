@@ -89,11 +89,15 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     void enable() {
-        User user = getNew();
-        service.create(user);
-        Assertions.assertFalse(user.isEnabled());
+        User user = service.get(USER_ID);
+        Assertions.assertTrue(user.isEnabled());
 
-        service.enable(user.getId(), true);
-        Assertions.assertFalse(user.isEnabled());
+        service.enable(USER_ID, false);
+        User disabledUser = service.get(USER_ID);
+        Assertions.assertFalse(disabledUser.isEnabled());
+
+        service.enable(USER_ID, true);
+        User enabledUser = service.get(USER_ID);
+        Assertions.assertTrue(enabledUser.isEnabled());
     }
 }

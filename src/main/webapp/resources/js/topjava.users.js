@@ -47,9 +47,10 @@ $(function () {
     );
 });
 
-function enableUser(userId, enabled, userRow) {
+function enableUser(userId, enabled, checkbox) {
     const originalEnabled = !enabled;
-
+    const userRow = checkbox.closest('tr');
+    
     $.ajax({
         url: ctx.ajaxUrl + userId + '/enable?enabled=' + enabled,
         type: 'PATCH',
@@ -65,12 +66,6 @@ function enableUser(userId, enabled, userRow) {
             const checkbox = userRow.find('.user-enabled-checkbox');
             checkbox.prop('checked', originalEnabled);
 
-            if (originalEnabled) {
-                userRow.removeClass('text-muted');
-            } else {
-                userRow.addClass('text-muted');
-            }
-
             failNoty(xhr);
         }
     });
@@ -82,7 +77,7 @@ $(function () {
         enableUser(
             $checkbox.data('user-id'),
             $checkbox.is(':checked'),
-            $checkbox.closest('tr')
+            $checkbox
         );
     });
 });
