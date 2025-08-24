@@ -2,7 +2,8 @@ const userAjaxUrl = "admin/users/";
 
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
-    ajaxUrl: userAjaxUrl
+    ajaxUrl: userAjaxUrl,
+    updateTable: defaultUpdateTable
 };
 
 // $(document).ready(function () {
@@ -46,13 +47,12 @@ $(function () {
     );
 });
 
-function enableUser(userId, enabled) {
-    const userRow = $('tr[id="' + userId + '"]');
+function enableUser(userId, enabled, userRow) {
+    const originalEnabled = !enabled;
 
     $.ajax({
-        url: ctx.ajaxUrl + userId + '/enable',
-        type: 'POST',
-        data: { enabled: enabled },
+        url: ctx.ajaxUrl + userId + '/enable?enabled=' + enabled,
+        type: 'PATCH',
         success: function () {
             if (enabled) {
                 userRow.removeClass('text-muted');
@@ -60,15 +60,30 @@ function enableUser(userId, enabled) {
                 userRow.addClass('text-muted');
             }
             successNoty(enabled ? 'User enabled' : 'User disabled');
+        },
+        error: function (xhr) {
+            const checkbox = userRow.find('.user-enabled-checkbox');
+            checkbox.prop('checked', originalEnabled);
+
+            if (originalEnabled) {
+                userRow.removeClass('text-muted');
+            } else {
+                userRow.addClass('text-muted');
+            }
+
+            failNoty(xhr);
         }
     });
 }
 
 $(function () {
     $(document).on('change', '.user-enabled-checkbox', function () {
-        const userId = $(this).data('user-id');
-        const enabled = $(this).is(':checked');
-        enableUser(userId, enabled);
+        const $checkbox = $(this);
+        enableUser(
+            $checkbox.data('user-id'),
+            $checkbox.is(':checked'),
+            $checkbox.closest('tr')
+        );
     });
 });
 

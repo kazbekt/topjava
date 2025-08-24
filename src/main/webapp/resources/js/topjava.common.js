@@ -27,7 +27,7 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        ctx.updateTable();
         successNoty("Deleted");
     });
 }
@@ -36,19 +36,7 @@ function updateDataTable(data) {
     ctx.datatableApi.clear().rows.add(data).draw();
 }
 
-function updateTable() {
-    const filterForm = $("#filterForm");
-
-    if (filterForm.length > 0) {
-        const formData = filterForm.serialize();
-        if (formData) {
-            $.get(ctx.ajaxUrl + "filter?" + formData, function (data) {
-                updateDataTable(data)
-            });
-            return;
-        }
-    }
-
+const defaultUpdateTable = function updateTable() {
     $.get(ctx.ajaxUrl, function (data) {
         updateDataTable(data)
     });
@@ -61,7 +49,7 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        ctx.updateTable();
         successNoty("Saved");
     });
 }
@@ -85,12 +73,26 @@ function successNoty(text) {
     }).show();
 }
 
-function failNoty(jqXHR) {
+function failNoty(jqXHROrText) {
     closeNoty();
+
+    let errorText;
+    if (typeof jqXHROrText === 'string') {
+        errorText = jqXHROrText;
+    } else if (jqXHROrText.status === 0) {
+        errorText = "Server unavailable. Check connection.";
+    } else if (jqXHROrText.status >= 400 && jqXHROrText.status < 500) {
+        errorText = "Client error: " + jqXHROrText.status;
+    } else if (jqXHROrText.status >= 500) {
+        errorText = "Server error: " + jqXHROrText.status;
+    } else {
+        errorText = "Error:  " + jqXHROrText.status;
+    }
+
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;Error status: " + jqXHR.status,
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorText,
         type: "error",
         layout: "bottomRight"
     });
-    failedNote.show()
+    failedNote.show();
 }
