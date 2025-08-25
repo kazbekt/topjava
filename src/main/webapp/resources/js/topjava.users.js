@@ -47,10 +47,12 @@ $(function () {
     );
 });
 
-function enableUser(userId, enabled, checkbox) {
+function enableUser(checkbox) {
+    const enabled = checkbox.prop('checked');
     const originalEnabled = !enabled;
     const userRow = checkbox.closest('tr');
-    
+    const userId = checkbox.data('user-id');
+
     $.ajax({
         url: ctx.ajaxUrl + userId + '/enable?enabled=' + enabled,
         type: 'PATCH',
@@ -63,9 +65,7 @@ function enableUser(userId, enabled, checkbox) {
             successNoty(enabled ? 'User enabled' : 'User disabled');
         },
         error: function (xhr) {
-            const checkbox = userRow.find('.user-enabled-checkbox');
             checkbox.prop('checked', originalEnabled);
-
             failNoty(xhr);
         }
     });
@@ -74,11 +74,7 @@ function enableUser(userId, enabled, checkbox) {
 $(function () {
     $(document).on('change', '.user-enabled-checkbox', function () {
         const $checkbox = $(this);
-        enableUser(
-            $checkbox.data('user-id'),
-            $checkbox.is(':checked'),
-            $checkbox
-        );
+        enableUser($checkbox);
     });
 });
 

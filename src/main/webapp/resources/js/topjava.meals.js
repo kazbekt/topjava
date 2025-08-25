@@ -2,9 +2,7 @@ const mealAjaxUrl = "profile/meals/";
 
 const ctx = {
     ajaxUrl: mealAjaxUrl,
-    updateTable: function () {
-        filter();
-    }
+    updateTable: filter
 };
 
 $(function () {
