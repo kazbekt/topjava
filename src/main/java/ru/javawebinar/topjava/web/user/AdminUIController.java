@@ -38,10 +38,7 @@ public class AdminUIController extends AbstractUserController {
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo, BindingResult result) {
         if (result.hasErrors()) {
-            String errorFieldsMsg = result.getFieldErrors().stream()
-                    .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                    .collect(Collectors.joining("<br>"));
-            return ResponseEntity.unprocessableEntity().body(errorFieldsMsg);
+            getErrorFieldsMsg(result);
         }
         if (userTo.isNew()) {
             super.create(userTo);
@@ -56,5 +53,12 @@ public class AdminUIController extends AbstractUserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void enable(@PathVariable int id, @RequestParam boolean enabled) {
         super.enable(id, enabled);
+    }
+
+    public static ResponseEntity<String> getErrorFieldsMsg(BindingResult result) {
+        String errorFieldsMsg = result.getFieldErrors().stream()
+                .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+                .collect(Collectors.joining("<br>"));
+        return ResponseEntity.unprocessableEntity().body(errorFieldsMsg);
     }
 }
