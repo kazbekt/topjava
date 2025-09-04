@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.web.user.AdminUIController.getErrorFieldsMsg;
+import static ru.javawebinar.topjava.util.Util.getErrorFieldsMsg;
 
 @RestController
 @RequestMapping(value = "/profile/meals", produces = MediaType.APPLICATION_JSON_VALUE)

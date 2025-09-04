@@ -61,9 +61,6 @@ $(function () {
             ],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr("data-meal-excess", data.excess);
-                if (data.excess) {
-                    $(row).addClass("excess");
-                }
             }
         })
     );
