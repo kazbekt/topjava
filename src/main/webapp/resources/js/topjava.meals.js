@@ -18,6 +18,23 @@ function clearFilter() {
 }
 
 $(function () {
+    $('.datepicker').datetimepicker({
+        format: 'Y-m-d',
+        timepicker: false,
+        dayOfWeekStart: 1
+    });
+
+    $('.timepicker').datetimepicker({
+        format: 'H:i',
+        datepicker: false,
+        step: 15
+    });
+
+    $('.datetimepicker').datetimepicker({
+        format: 'Y-m-d H:i',
+        step: 15,
+        dayOfWeekStart: 1
+    });
     makeEditable(
         $("#datatable").DataTable({
             "ajax": {
