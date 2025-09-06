@@ -8,6 +8,29 @@ function makeEditable(datatableApi) {
         failNoty(jqXHR);
     });
 
+    $.ajaxSetup({
+        converters: {
+            "text json": function (text) {
+                const data = JSON.parse(text);
+                function convertDateTime(obj) {
+                    if (Array.isArray(obj)) {
+                        return obj.map(convertDateTime);
+                    } else if (obj !== null && typeof obj === 'object') {
+                        Object.keys(obj).forEach(key => {
+                            if (key === 'dateTime' && obj[key] && typeof obj[key] === 'string') {
+                                obj[key] = obj[key].replace('T', ' ').substring(0, 16);
+                            } else {
+                                obj[key] = convertDateTime(obj[key]);
+                            }
+                        });
+                    }
+                    return obj;
+                }
+                return convertDateTime(data);
+            }
+        }
+    });
+
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
     $.ajaxSetup({cache: false});
 }
@@ -22,10 +45,6 @@ function updateRow(id) {
     form.find(":input").val("");
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
-        if (data.dateTime) {
-            data.dateTime = data.dateTime.replace('T', ' ').substring(0, 16);
-        }
-
         $.each(data, function (key, value) {
             form.find(`input[name='${key}']`).val(value);
         });
@@ -50,11 +69,6 @@ function updateTableByData(data) {
 }
 
 function save() {
-    const dateTimeInput = form.find('input[name="dateTime"]');
-    if (dateTimeInput.length > 0) {
-        const dateTimeVal = dateTimeInput.val();
-        dateTimeInput.val(dateTimeVal.replace(' ', 'T'));
-    }
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl,
