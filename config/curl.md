@@ -38,4 +38,4 @@
 `curl -s -X POST -d '{}' -H 'Content-Type: application/json' http://localhost:8080/topjava/rest/admin/users --user admin@gmail.com:admin`
 
 #### validate Meal with Error
-curl -s -X POST -d '{"dateTime":"2020-02-01T12:00","description":"Created lunch","calories":30000}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/topjava/rest/profile/meals --user user@yandex.ru:password
+curl -s -X POST -d '{"dateTime":"2020-02-01T12:00","description":"C","calories":30000}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/topjava/rest/profile/meals --user user@yandex.ru:password

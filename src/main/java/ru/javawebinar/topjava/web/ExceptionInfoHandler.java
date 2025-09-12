@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,10 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.ErrorInfo;
-import ru.javawebinar.topjava.util.exception.ErrorType;
-import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,8 +56,15 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})
+            HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
+            BindingErrorException.class})
     public ErrorInfo validationError(HttpServletRequest req, Exception e) {
+        if (e instanceof MethodArgumentNotValidException) {
+            return getErrorInfoFromBindingResult(req, ((MethodArgumentNotValidException) e).getBindingResult());
+        } else if (e instanceof BindingErrorException) {
+            BindingErrorException bee = (BindingErrorException) e;
+            return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, bee.getErrors());
+        }
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
@@ -78,5 +83,21 @@ public class ExceptionInfoHandler {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
         return new ErrorInfo(req.getRequestURL(), errorType, rootCause.getMessage());
+    }
+
+    private static ErrorInfo getErrorInfoFromBindingResult(HttpServletRequest req, BindingResult result) {
+        String[] errors = getErrorsArray(result);
+        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, errors);
+    }
+
+    public static BindingErrorException createBindingErrorException(BindingResult result) {
+        String[] errors = getErrorsArray(result);
+        return new BindingErrorException(errors);
+    }
+
+    private static String[] getErrorsArray(BindingResult result) {
+        return result.getFieldErrors().stream()
+                .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+                .toArray(String[]::new);
     }
 }
