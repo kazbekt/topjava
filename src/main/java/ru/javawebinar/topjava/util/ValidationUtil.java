@@ -2,9 +2,7 @@ package ru.javawebinar.topjava.util;
 
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
-import org.springframework.validation.BindingResult;
 import ru.javawebinar.topjava.HasId;
-import ru.javawebinar.topjava.util.exception.BindingErrorException;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 

@@ -2,11 +2,13 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +20,6 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Map;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
@@ -28,8 +29,14 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
+    private final MessageSource messageSource;
+
+    public ExceptionInfoHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
     private static Map<String, String> CONSTRAINS_I18N_MAP = Map.of(
-            "users_unique_email_idx", "User with this email already exists",
+            "users_unique_email_idx", "duplicate.email",
             "meals_unique_user_datetime_idx", "Meal with this date and time exists");
 
     //  http://stackoverflow.com/a/22358422/548473
@@ -43,27 +50,29 @@ public class ExceptionInfoHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         String rootMsg = ValidationUtil.getRootCause(e).getMessage();
-        if (rootMsg != null) {
-            String lowerCaseMsg = rootMsg.toLowerCase();
-            for (Map.Entry<String, String> entry : CONSTRAINS_I18N_MAP.entrySet()) {
-                if (lowerCaseMsg.contains(entry.getKey())) {
-                    return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, entry.getValue());
+        if (rootMsg != null && rootMsg.contains("users_unique_email_idx")) {
+//            String lowerCaseMsg = rootMsg.toLowerCase();
+//            for (Map.Entry<String, String> entry : CONSTRAINS_I18N_MAP.entrySet()) {
+//                if (lowerCaseMsg.contains(entry.getKey())) {
+//                    String message = messageSource.getMessage(entry.getValue(), null, req.getLocale());
+                    return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR,"User with this email already exists");
                 }
-            }
-        }
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+//            }
+//        }
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
             HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
-            BindingErrorException.class})
+            BindException.class})
     public ErrorInfo validationError(HttpServletRequest req, Exception e) {
         if (e instanceof MethodArgumentNotValidException) {
-            return getErrorInfoFromBindingResult(req, ((MethodArgumentNotValidException) e).getBindingResult());
-        } else if (e instanceof BindingErrorException) {
-            BindingErrorException bee = (BindingErrorException) e;
-            return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, bee.getErrors());
+            String[] messages = getErrorsArray((MethodArgumentNotValidException) e);
+            return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, messages);
+        } else if (e instanceof BindException) {
+            String[] messages = getErrorsArray((BindException) e);
+            return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, messages);
         }
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
@@ -82,17 +91,7 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.getMessage());
-    }
-
-    private static ErrorInfo getErrorInfoFromBindingResult(HttpServletRequest req, BindingResult result) {
-        String[] errors = getErrorsArray(result);
-        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, errors);
-    }
-
-    public static BindingErrorException createBindingErrorException(BindingResult result) {
-        String[] errors = getErrorsArray(result);
-        return new BindingErrorException(errors);
+        return new ErrorInfo(req.getRequestURL(), errorType, messages);
     }
 
     private static String[] getErrorsArray(BindingResult result) {
