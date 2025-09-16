@@ -25,6 +25,7 @@
                     <list>
                         <value>text/plain;charset=UTF-8</value>
                         <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
                     </list>
                 </property>
             </bean>
@@ -70,7 +71,15 @@
         <property name="fallbackToSystemLocale" value="false"/>
     </bean>
 
+    <bean id="localeResolver"
+          class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale" value="ru"/>
+    </bean>
+
     <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="lang"/>
+        </bean>
         <bean class="ru.javawebinar.topjava.web.interceptor.ModelInterceptor"/>
     </mvc:interceptors>
 </beans>
